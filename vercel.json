@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/:path(.*)", "destination": "https://api.neorealtor.yourcofounder.com.ua/:path" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
