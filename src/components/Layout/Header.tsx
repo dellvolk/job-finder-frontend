@@ -1,48 +1,58 @@
 import React from "react"
 import styled from "styled-components"
-import { Button, Typography } from "@mui/material"
+import {Button, Typography} from "@mui/material"
 import useAppDispatch from "../../app/hooks/useAppDispatch"
-import { logout, setAuthModalType } from "../../store/auth/auth.slice"
+import {logout, setAuthModalType} from "../../store/auth/auth.slice"
 import useAuth from "../../app/hooks/useAuth"
+import {Link, NavLink} from "react-router-dom";
 
 const Header = () => {
-	const auth = useAuth()
-	const dispatch = useAppDispatch()
+    const auth = useAuth()
+    const dispatch = useAppDispatch()
 
-	const openLoginModal = () => {
-		dispatch(setAuthModalType({type: "login"}))
-	}
+    const openLoginModal = () => {
+        dispatch(setAuthModalType({type: "login"}))
+    }
 
-	const openRegistrationModal = () => {
-		dispatch(setAuthModalType({type: "registration"}))
-	}
+    const openRegistrationModal = () => {
+        dispatch(setAuthModalType({type: "registration"}))
+    }
 
-	const handleLogout = () => {
-		dispatch(logout())
-	}
+    const handleLogout = () => {
+        dispatch(logout())
+    }
 
-	return (
-		<HeaderStyled>
-			<div className="container">
-				<div className="header__container">
-					<Typography variant="h5" gutterBottom className="header__logo">
-						neorealtor
-					</Typography>
-					<div className="header__auth">
-						{auth ? <>
-							<Button color="white" onClick={handleLogout}>Log Out</Button>
-						</> : <>
-							<Button color="white" onClick={openLoginModal}>Log In</Button>
-							<Button color="white" variant="contained" onClick={openRegistrationModal} style={{marginLeft: 15}}>Sign Up</Button>
-						</>}
-						{/*<SignUpButton variant="contained" color="success">*/}
-						{/*	Sign up*/}
-						{/*</SignUpButton>*/}
-					</div>
-				</div>
-			</div>
-		</HeaderStyled>
-	)
+    return (
+        <HeaderStyled className="header">
+            <div className="container">
+                <div className="header__container">
+                    <div className="nav-left-items">
+                        <Link to={'/'}>
+                            <Typography variant="h5" gutterBottom className="header__logo">
+                                JOBS.FINDER
+                            </Typography>
+                        </Link>
+                        <ul className="nav-list">
+                            <li><NavLink to={'/find'}>Find</NavLink></li>
+                            <li><NavLink to={'/matches'}>Matches</NavLink></li>
+                        </ul>
+                    </div>
+                    <div className="header__auth">
+                        {auth ? <>
+                            <Button color="white" onClick={handleLogout}>Log Out</Button>
+                        </> : <>
+                            <Button color="white" onClick={openLoginModal}>Log In</Button>
+                            <Button color="white" variant="contained" onClick={openRegistrationModal}
+                                    style={{marginLeft: 15}}>Sign Up</Button>
+                        </>}
+                        {/*<SignUpButton variant="contained" color="success">*/}
+                        {/*	Sign up*/}
+                        {/*</SignUpButton>*/}
+                    </div>
+                </div>
+            </div>
+        </HeaderStyled>
+    )
 }
 
 const HeaderStyled = styled.div`
@@ -64,6 +74,21 @@ const HeaderStyled = styled.div`
   box-shadow: inset 0 -1px 0 0 hsla(0, 0%, 100%, 0.1);
   transition: box-shadow 0.1s ease 0s, background-color 0.1s ease 0s;
   color: #fff;
+  
+  .nav-left-items {
+    display: flex;
+    
+    ul {
+      display: flex;
+      align-items: center;
+      margin-left: 100px;
+      gap: 30px;
+      
+      a.active {
+        color: #BC00A3;
+      }
+    }
+  }
 
   .header__container {
     display: flex;

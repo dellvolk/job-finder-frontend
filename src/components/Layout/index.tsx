@@ -3,17 +3,19 @@ import styled from "styled-components"
 import Header from "./Header"
 
 interface ILayoutProps {
-	children: React.ReactNode
+    children?: React.ReactNode
 }
 
-export default function Home({ children }: ILayoutProps) {
-	return (
-		<IndexStyled>
-			<Header />
-			{children}
-		</IndexStyled>
-	)
+const Layout: React.FC<ILayoutProps> = ({children}) => {
+    return (
+        <LayoutStyled>
+            <Header/>
+            {children}
+        </LayoutStyled>
+    )
 }
 
-const IndexStyled = styled.div`
+const LayoutStyled = styled.div`
 `
+
+export default Layout
