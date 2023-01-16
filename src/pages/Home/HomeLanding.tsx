@@ -1,8 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import background from "../../assets/main-background.jpg";
-import { Typography } from "@mui/material";
-import SearchForm from "../../components/SearchForm";
+import {Typography} from "@mui/material";
 
 const HomeLanding = () => {
   return (
@@ -11,12 +10,12 @@ const HomeLanding = () => {
         <div className="row">
           <div className="col-md-5">
             <div className="mt-36">
-              <Typography variant="h2" component="h2" className="text-white font-bold uppercase">Save money</Typography>
-              <Typography variant="h4" component="h4" className="text-slate-300">Check the real price of the apartment</Typography>
+              <Typography variant="h2" component="h2" className="text-white font-bold uppercase">Jobs Finder</Typography>
+              <Typography variant="h4" component="h4" className="text-slate-300">Easily find employees or work</Typography>
             </div>
           </div>
           <div className="col-md-7">
-            <SearchForm />
+            {/*<SearchForm />*/}
           </div>
         </div>
       </div>

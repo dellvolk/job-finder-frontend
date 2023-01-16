@@ -24,11 +24,21 @@ const baseUrl = "/api"
 
 const baseQuery = fetchBaseQuery({
 	baseUrl: baseUrl,
-	prepareHeaders: (headers, { getState }) => {
+	prepareHeaders: async (headers, { getState }) => {
+        console.log('+++++')
+        headers.set('Content-Type', 'application/json;charset=utf-8')
 		// By default, if we have a token in the store, let's use that for authenticated requests
-		const token = (getState() as RootState).auth.token
+		// const token = (getState() as RootState).auth.token
+        console.log({auth: (getState() as RootState).auth})
+        // const firebaseApp = (getState() as RootState).auth.auth.app
+
+        // console.log('HEEL', {firebaseApp})
+
+        const currentUser = (getState() as RootState).auth.auth.currentUser
+        const token = await currentUser.getIdToken(true);
+        console.log({token})
 		if (token) {
-			headers.set("Authorization", `JWT ${token}`)
+			headers.set("Authentication", `Bearer ${token}`)
 		}
 		return headers
 	},

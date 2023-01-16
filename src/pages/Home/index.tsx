@@ -1,17 +1,15 @@
 import React from "react"
 import styled from "styled-components"
 import HomeLanding from "./HomeLanding"
-import useAuth from "../../app/hooks/useAuth";
 
-export default function Index() {
-    const auth = useAuth()
+export default function Home() {
 
     return (
-        <IndexStyled>
+        <HomeStyled>
             <HomeLanding/>
-        </IndexStyled>
+        </HomeStyled>
     )
 };
 
-const IndexStyled = styled.div`
+const HomeStyled = styled.div`
 `

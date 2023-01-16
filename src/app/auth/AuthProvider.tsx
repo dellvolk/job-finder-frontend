@@ -1,3 +1,91 @@
+import React, {createContext, FC, PropsWithChildren, useContext, useMemo, useState} from "react";
+
+import {initializeApp, FirebaseApp} from "firebase/app";
+import {getAuth, User} from "firebase/auth";
+import useAppDispatch from "../hooks/useAppDispatch";
+import {authActions} from "../../store/auth/auth.slice";
+
+interface AuthProviderContextProps {
+    app: FirebaseApp;
+    currentUser: User | null;
+    isLoggedIn: boolean;
+}
+
+export const AuthProviderContext = createContext<AuthProviderContextProps>(null);
+
+interface AuthProviderProps extends PropsWithChildren {
+    apiKey: string;
+    authDomain: string;
+    projectId: string;
+    storageBucket: string;
+    messagingSenderId: string;
+    appId: string;
+    measurementId: string;
+}
+
+const AuthProvider: FC<AuthProviderProps> = ({
+                                                        apiKey,
+                                                        authDomain,
+                                                        projectId,
+                                                        storageBucket,
+                                                        messagingSenderId,
+                                                        appId,
+                                                        measurementId,
+                                                        children
+                                                    }) => {
+    const app = useMemo(
+        () =>
+            initializeApp({
+                apiKey,
+                authDomain,
+                projectId,
+                storageBucket,
+                measurementId,
+                messagingSenderId,
+                appId
+            }),
+        [apiKey, appId, authDomain, measurementId, messagingSenderId, projectId, storageBucket]
+    );
+    const dispatch = useAppDispatch()
+
+    const [currentUser, setCurrentUser] = useState<User>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const auth = getAuth(app);
+    auth.onAuthStateChanged((user) => {
+        setCurrentUser(user);
+        setIsLoading(false);
+    });
+
+    React.useEffect(() => {
+        dispatch(authActions.setAuth({
+            // app,
+            currentUser,
+            isLoggedIn: !!currentUser
+        }))
+    }, [app, currentUser])
+
+    if (isLoading) {
+        return <>Loading...</>;
+    }
+
+    return (
+        <AuthProviderContext.Provider value={{app, currentUser, isLoggedIn: !!currentUser}}>
+            {children}
+        </AuthProviderContext.Provider>
+    );
+};
+
+export default AuthProvider
+
+// export const useAuth = () => {
+//     const {app, currentUser, isLoggedIn} = useContext(AuthProviderContext);
+//     const auth = getAuth(app);
+//
+//     return {auth, currentUser, isLoggedIn};
+// };
+
+/*
 import React from "react"
 import { useRefreshMutation } from "../../store/auth/auth.api"
 
@@ -21,3 +109,4 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
 	return <>{children}</>
 }
+*/

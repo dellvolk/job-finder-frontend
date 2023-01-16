@@ -8,12 +8,22 @@ import {errorHandler} from "./middlewares";
 export const store = configureStore({
     reducer: {
         auth,
-		user,
+        user,
         [authApi.reducerPath]: authApi.reducer,
         [userApi.reducerPath]: userApi.reducer,
     },
-    middleware: (getDefaultMiddleware: any) => getDefaultMiddleware()
-        .concat([authApi.middleware, userApi.middleware, errorHandler]),
+    middleware: (getDefaultMiddleware: any) =>
+        getDefaultMiddleware({
+            serializableCheck: {
+                // Ignore these action types
+                ignoredActions: ['auth/setAuth'],
+                // Ignore these field paths in all actions
+                ignoredActionPaths: ['meta.arg', 'payload.timestamp'],
+                // Ignore these paths in the state
+                ignoredPaths: ['items.dates'],
+            }
+        })
+            .concat([authApi.middleware, userApi.middleware, errorHandler]),
 });
 
 export type AppDispatch = typeof store.dispatch;

@@ -1,13 +1,20 @@
 import React from "react"
 import styled from "styled-components"
-import {Button, Typography} from "@mui/material"
+import {Button, IconButton, Typography} from "@mui/material"
 import useAppDispatch from "../../app/hooks/useAppDispatch"
-import {logout, setAuthModalType} from "../../store/auth/auth.slice"
+import {setAuthModalType} from "../../store/auth/auth.slice"
 import useAuth from "../../app/hooks/useAuth"
 import {Link, NavLink} from "react-router-dom";
+import SettingsIcon from '@mui/icons-material/Settings';
+import {signOut} from "firebase/auth";
 
-const Header = () => {
-    const auth = useAuth()
+interface IHeaderProps {
+    openSettings: () => void
+}
+
+const Header:React.FC<IHeaderProps> = ({openSettings}) => {
+    const {auth, currentUser, isLoggedIn} = useAuth()
+    console.log('HEADER', {auth, currentUser, isLoggedIn})
     const dispatch = useAppDispatch()
 
     const openLoginModal = () => {
@@ -18,9 +25,21 @@ const Header = () => {
         dispatch(setAuthModalType({type: "registration"}))
     }
 
-    const handleLogout = () => {
-        dispatch(logout())
+    const handleLogout = async () => {
+        // dispatch(logout())
+        try {
+            await signOut(auth);
+            // dispatch(authActions.setAuthModalType({type: false}))
+            console.log('Success Logout')
+            // routerNavigation("/dashboard");
+        } catch (e) {
+            console.log('FAIL logout')
+            const errorMessage = e.message;
+            console.log(errorMessage)
+        }
     }
+
+    console.log({auth})
 
     return (
         <HeaderStyled className="header">
@@ -32,13 +51,22 @@ const Header = () => {
                                 JOBS.FINDER
                             </Typography>
                         </Link>
-                        <ul className="nav-list">
+                        {isLoggedIn && <ul className="nav-list">
                             <li><NavLink to={'/find'}>Find</NavLink></li>
                             <li><NavLink to={'/matches'}>Matches</NavLink></li>
-                        </ul>
+                        </ul>}
                     </div>
                     <div className="header__auth">
-                        {auth ? <>
+                        {(isLoggedIn) ? <>
+                            <IconButton
+                                color="inherit"
+                                aria-label="open drawer"
+                                onClick={openSettings}
+                                edge="start"
+                                // sx={{ mr: 2, ...(open && { display: 'none' }) }}
+                            >
+                                <SettingsIcon  />
+                            </IconButton>
                             <Button color="white" onClick={handleLogout}>Log Out</Button>
                         </> : <>
                             <Button color="white" onClick={openLoginModal}>Log In</Button>
@@ -99,7 +127,7 @@ const HeaderStyled = styled.div`
   .header__logo {
     text-transform: uppercase;
     color: #fff;
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
 
   .header__auth {
