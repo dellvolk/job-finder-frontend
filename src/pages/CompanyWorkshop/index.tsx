@@ -21,7 +21,7 @@ const CompanyWorkshop: React.FC<ICompanyWorkshopProps> = ({}) => {
         return <></>
     }
 
-    if (false && userInfo.role !== UserRole.COMPANY) {
+    if (userInfo.role !== UserRole.COMPANY) {
         return <Navigate to={'/'}/>
     }
 

@@ -66,7 +66,7 @@ const Header: React.FC<IHeaderProps> = ({openSettings}) => {
                     <div className="header__auth">
                         {(isLoggedIn) ? <>
                             {/* TODO: Change after fix role on BE*/}
-                            {(true || userInfo?.role === UserRole.COMPANY) && <Link to='/workshop'>
+                            {(userInfo?.role === UserRole.COMPANY) && <Link to='/workshop'>
                                 <IconButton
                                     color="inherit"
                                     aria-label="open drawer"
