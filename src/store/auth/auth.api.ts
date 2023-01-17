@@ -3,6 +3,7 @@ import baseQuery from "../../app/api";
 import { LoginRequest, LoginResponse, SignUpRequest } from "../../app/interfaces/auth.types"
 
 const authApi = createApi({
+    reducerPath: 'api/auth',
     baseQuery,
     endpoints: (builder) => ({
         login: builder.mutation<LoginResponse, LoginRequest>({

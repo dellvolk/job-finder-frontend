@@ -82,4 +82,4 @@ export default authSlice.reducer;
 export const selectToken = (state: RootState) => state.auth.token;
 export const selectPermissions = (state: RootState) => state.auth.permissions;
 export const selectAuthModalType = (state: RootState) => state.auth.authModalType;
-export const selectAuth = (state: RootState) => state.auth;
+export const selectAuth = (state: RootState) => state.auth.auth;

@@ -1,14 +1,15 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { IPredict } from "./user.types";
+import {createSlice} from "@reduxjs/toolkit";
+import {IUser} from "./user.types";
 import authApi from "../auth/auth.api";
 import userApi from "./user.api";
+import { RootState } from "../store";
 
 export type TAuthModalType = "login" | "registration" | false
 
 const INITIAL_STATE = {
-  predictPrice: undefined,
+    user: null
 } as {
-  predictPrice?: IPredict
+    user: IUser | null
 }
 
 const userSlice = createSlice({
@@ -16,9 +17,13 @@ const userSlice = createSlice({
 	initialState: INITIAL_STATE,
 	reducers: {},
 	extraReducers: (builder) => {
-    builder.addMatcher(userApi.endpoints.predictPrice.matchFulfilled, (state, { payload }) => {
-      state.predictPrice = payload;
-    });
+        builder.addMatcher(userApi.endpoints.userInfo.matchFulfilled, (state, {payload}) => {
+            state.user = {...state.user, ...payload};
+        });
+
+        builder.addMatcher(userApi.endpoints.postUserType.matchFulfilled, (state, {payload}) => {
+            state.user = {...state.user, ...payload};
+        });
 	}
 });
 
@@ -26,4 +31,4 @@ export const {} = userSlice.actions;
 
 export default userSlice.reducer;
 
-// export const selectToken = (state: RootState) => state.auth.token;
+export const selectUser = (state: RootState) => state.user.user;

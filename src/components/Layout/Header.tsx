@@ -7,15 +7,22 @@ import useAuth from "../../app/hooks/useAuth"
 import {Link, NavLink} from "react-router-dom";
 import SettingsIcon from '@mui/icons-material/Settings';
 import {signOut} from "firebase/auth";
+import LogoutIcon from '@mui/icons-material/Logout';
+import HomeRepairServiceIcon from '@mui/icons-material/HomeRepairService';
+import useAppSelector from "../../app/hooks/useAppSelector";
+import {selectUser} from "../../store/user/user.slice";
+import {UserRole} from "../../store/user/user.types";
 
 interface IHeaderProps {
     openSettings: () => void
 }
 
-const Header:React.FC<IHeaderProps> = ({openSettings}) => {
+const Header: React.FC<IHeaderProps> = ({openSettings}) => {
     const {auth, currentUser, isLoggedIn} = useAuth()
-    console.log('HEADER', {auth, currentUser, isLoggedIn})
+    const userInfo = useAppSelector(selectUser)
     const dispatch = useAppDispatch()
+
+    console.log('HEADER', {auth, currentUser, isLoggedIn, userInfo})
 
     const openLoginModal = () => {
         dispatch(setAuthModalType({type: "login"}))
@@ -58,16 +65,39 @@ const Header:React.FC<IHeaderProps> = ({openSettings}) => {
                     </div>
                     <div className="header__auth">
                         {(isLoggedIn) ? <>
+                            {/* TODO: Change after fix role on BE*/}
+                            {(true || userInfo?.role === UserRole.COMPANY) && <Link to='/workshop'>
+                                <IconButton
+                                    color="inherit"
+                                    aria-label="open drawer"
+                                    // onClick={openSettings}
+                                    edge="start"
+                                    // href='/find'
+                                    // sx={{ mr: 2, ...(open && { display: 'none' }) }}
+                                >
+                                    <HomeRepairServiceIcon/>
+                                </IconButton>
+                            </Link>}
                             <IconButton
                                 color="inherit"
                                 aria-label="open drawer"
                                 onClick={openSettings}
                                 edge="start"
+                                className="mx-2.5"
                                 // sx={{ mr: 2, ...(open && { display: 'none' }) }}
                             >
-                                <SettingsIcon  />
+                                <SettingsIcon/>
                             </IconButton>
-                            <Button color="white" onClick={handleLogout}>Log Out</Button>
+                            <IconButton
+                                color="inherit"
+                                // aria-label="open drawer"
+                                onClick={handleLogout}
+                                // edge="start"
+                                // sx={{ mr: 2, ...(open && { display: 'none' }) }}
+                            >
+                                <LogoutIcon/>
+                            </IconButton>
+                            {/*<Button color="white" onClick={handleLogout}>Log Out</Button>*/}
                         </> : <>
                             <Button color="white" onClick={openLoginModal}>Log In</Button>
                             <Button color="white" variant="contained" onClick={openRegistrationModal}
@@ -102,16 +132,16 @@ const HeaderStyled = styled.div`
   box-shadow: inset 0 -1px 0 0 hsla(0, 0%, 100%, 0.1);
   transition: box-shadow 0.1s ease 0s, background-color 0.1s ease 0s;
   color: #fff;
-  
+
   .nav-left-items {
     display: flex;
-    
+
     ul {
       display: flex;
       align-items: center;
       margin-left: 100px;
       gap: 30px;
-      
+
       a.active {
         color: #BC00A3;
       }

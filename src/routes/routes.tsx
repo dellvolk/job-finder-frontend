@@ -2,6 +2,7 @@ import Home from "../pages/Home"
 import FindPage from "../pages/FindPage";
 import MatchesPage from "../pages/MatchesPage";
 import { Navigate } from "react-router-dom";
+import CompanyWorkshop from "../pages/CompanyWorkshop";
 
 interface IRoute {
     path: string
@@ -11,6 +12,7 @@ interface IRoute {
 }
 
 const routes:IRoute[] = [
+    { path: '/workshop', component: <CompanyWorkshop/>, protected: true, permission: false},
     { path: "/find", component: <FindPage/>, protected: true, permission: false },
     { path: "/matches", component: <MatchesPage/>, protected: true, permission: false },
     { path: "/", component: <Home/>, protected: false, permission: false },

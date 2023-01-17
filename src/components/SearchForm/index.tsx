@@ -1,17 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { Button, Chip, Divider, TextField, Typography } from "@mui/material";
-import {
-  useGetDataByLinkMutation,
-  useGetRealtyEstatesOptionsQuery,
-  usePredictPriceMutation
-} from "../../store/user/user.api";
-import Select from "../Select";
-import Input from "./Input";
-import { IApartment } from "../../store/user/user.types";
+import {Chip, Divider, TextField} from "@mui/material";
+import Input from "../Input";
 import useAuth from "../../app/hooks/useAuth";
 import useAppDispatch from "../../app/hooks/useAppDispatch";
-import { setAuthModalType } from "../../store/auth/auth.slice";
+import {setAuthModalType} from "../../store/auth/auth.slice";
 
 interface ISearchFormProps {
 
@@ -20,11 +13,8 @@ interface ISearchFormProps {
 const SearchForm = ({}: ISearchFormProps) => {
   const auth = useAuth()
   const dispatch = useAppDispatch()
-  const [getDataByLink, { data: _data, isLoading, isError }] = useGetDataByLinkMutation();
-  const [onPredict, { data: result, isLoading: isLoadingPredict, isError: isErrorPredict }] = usePredictPriceMutation();
-  const { data: options, isLoading: isLoadingOptions, isError: isErrorOptions } = useGetRealtyEstatesOptionsQuery();
   const [link, setLink] = React.useState("");
-  const [data, setData] = React.useState<IApartment>({
+  const [data, setData] = React.useState<any>({
     rooms_count: "",
     total_space: 0,
     living_space: "",
@@ -39,13 +29,8 @@ const SearchForm = ({}: ISearchFormProps) => {
     // "image_url": "string"
   });
 
-  React.useEffect(() => {
-    // @ts-ignore
-    setData(prev => ({ ...prev, ..._data, address: "м. Київ", }));
-  }, [_data]);
-
   const handleSearch = () => {
-    getDataByLink(link);
+    // getDataByLink(link);
   };
 
   const handleChange = (v: string, key: string) => {
@@ -70,7 +55,7 @@ const SearchForm = ({}: ISearchFormProps) => {
       max_floor: Number(data.max_floor),
 
     };
-    onPredict(body);
+
   };
 
   return (
@@ -91,20 +76,20 @@ const SearchForm = ({}: ISearchFormProps) => {
             value={link}
             onChange={e => setLink(e.target.value)}
             placeholder="https://rieltor.ua/flats-rent/view/10552873/"
-            error={isError}
-            helperText={isError ? "Invalid link" : ""}
+            // error={isError}
+            // helperText={isError ? "Invalid link" : ""}
           />
-          <Button
-            size="small"
-            onClick={handleSearch}
-            // loadingIndicator="Loading…"
-            color="violet"
-            variant="outlined"
-            className="ml-3.5"
-            disabled={isLoading}
-          >
-            {isLoading ? "Searching..." : "Search apartment"}
-          </Button>
+          {/*<Button*/}
+          {/*  size="small"*/}
+          {/*  onClick={handleSearch}*/}
+          {/*  // loadingIndicator="Loading…"*/}
+          {/*  color="violet"*/}
+          {/*  variant="outlined"*/}
+          {/*  className="ml-3.5"*/}
+          {/*  // disabled={isLoading}*/}
+          {/*>*/}
+          {/*  /!*{isLoading ? "Searching..." : "Search apartment"}*!/*/}
+          {/*</Button>*/}
         </div>
       </div>
       <Divider>
@@ -117,18 +102,18 @@ const SearchForm = ({}: ISearchFormProps) => {
           </div>
         </div>
         <div className="row">
-          <div className="col-4">
-            <Select options={options?.wall_material} onChange={v => handleChange(v, "wall_material")}
-                    label="Матеріал стін" value={data.wall_material} />
-          </div>
-          <div className="col-4">
-            <Select options={options?.room_planning} onChange={v => handleChange(v, "room_planning")}
-                    label="Планування" value={data.room_planning} />
-          </div>
-          <div className="col-4">
-            <Select options={options?.home_renovation_type} onChange={v => handleChange(v, "home_renovation_type")}
-                    label="Ремонт" value={data.home_renovation_type} />
-          </div>
+          {/*<div className="col-4">*/}
+          {/*  <Select options={options?.wall_material} onChange={v => handleChange(v, "wall_material")}*/}
+          {/*          label="Матеріал стін" value={data.wall_material} />*/}
+          {/*</div>*/}
+          {/*<div className="col-4">*/}
+          {/*  <Select options={options?.room_planning} onChange={v => handleChange(v, "room_planning")}*/}
+          {/*          label="Планування" value={data.room_planning} />*/}
+          {/*</div>*/}
+          {/*<div className="col-4">*/}
+          {/*  <Select options={options?.home_renovation_type} onChange={v => handleChange(v, "home_renovation_type")}*/}
+          {/*          label="Ремонт" value={data.home_renovation_type} />*/}
+          {/*</div>*/}
         </div>
         <div className="row">
           <div className="col-4">
@@ -152,18 +137,17 @@ const SearchForm = ({}: ISearchFormProps) => {
           </div>
         </div>
         <div className="flex items-center justify-center mt-3.5">
-          <Button color="white" variant="contained" disabled={isLoadingPredict} onClick={handleClick}>Визначити
-            ціну</Button>
+          {/*<Button color="white" variant="contained" disabled={isLoadingPredict} onClick={handleClick}>Визначити ціну</Button>*/}
         </div>
       </div>
-      {result && <>
-        <Divider>
-          <Chip label="Result" />
-        </Divider>
-        <div className="flex items-center justify-center p-4">
-          <Typography variant="h2" component="h2" className="text-white text-center font-bold uppercase">{result.price}</Typography>
-        </div>
-      </>}
+      {/*{result && <>*/}
+      {/*  <Divider>*/}
+      {/*    <Chip label="Result" />*/}
+      {/*  </Divider>*/}
+      {/*  <div className="flex items-center justify-center p-4">*/}
+      {/*    <Typography variant="h2" component="h2" className="text-white text-center font-bold uppercase">{result.price}</Typography>*/}
+      {/*  </div>*/}
+      {/*</>}*/}
     </SearchFormStyled>
   );
 };

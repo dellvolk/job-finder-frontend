@@ -3,12 +3,20 @@ import styled from "styled-components";
 import Backdrop from "@mui/material/Backdrop";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
-import {authActions, TAuthModalType} from "../../store/auth/auth.slice";
+import {authActions, selectAuth, TAuthModalType} from "../../store/auth/auth.slice";
 import Box from "@mui/material/Box";
 import {Button, Tab, Tabs, TextField} from "@mui/material";
 import useAuth from "../../app/hooks/useAuth";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword} from "firebase/auth";
 import useAppDispatch from "../../app/hooks/useAppDispatch";
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import {errorToMsg} from "../../app/helpers";
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
+import {usePostUserTypeMutation} from "../../store/user/user.api";
+import {UserRole} from "../../store/user/user.types";
+import useAppSelector from "../../app/hooks/useAppSelector";
 
 interface IAuthModalProps {
     onClose: () => void;
@@ -34,11 +42,21 @@ const AuthModal = ({onClose, setType, type}: IAuthModalProps) => {
             email: "", password: ""
         },
         reg: {
-            email: "", password: "", confirm: ""
+            email: "", password: "", confirm: "", userType: 'developer'
         }
     });
+    const stateAuth = useAppSelector(selectAuth)
+    const [postUserType, {data, isSuccess, ...pp}] = usePostUserTypeMutation()
+    const [isSignUpSuccess, setIsSignUpSuccess] = React.useState(false)
+    const [authErrorMessage, setAuthErrorMessage] = React.useState(null);
     const {auth, currentUser, isLoggedIn} = useAuth()
     const dispatch = useAppDispatch()
+
+    console.log({postUserType, data, isSuccess, ...pp})
+
+    const handleSetUserRole = async (role: UserRole) => {
+        postUserType({userRole: role})
+    }
 
     const onChange = (e: ChangeEvent<HTMLInputElement>) => {
         const [_type, name] = e.target.id.split("-") as ["login" | "reg", "email" | "password" | "confirm"];
@@ -53,6 +71,7 @@ const AuthModal = ({onClose, setType, type}: IAuthModalProps) => {
     };
 
     const onLogin = async () => {
+        setAuthErrorMessage(null)
         try {
             await signInWithEmailAndPassword(auth, form.login.email, form.login.password);
             dispatch(authActions.setAuthModalType({type: false}))
@@ -62,25 +81,38 @@ const AuthModal = ({onClose, setType, type}: IAuthModalProps) => {
             console.log('FAIL Sign IN')
             const errorMessage = e.message;
             console.log(errorMessage)
-            // setAuthErrorMessage(errorToMsg(errorMessage));
+            setAuthErrorMessage(errorToMsg(errorMessage));
         }
     };
 
+    React.useEffect(() => {
+        if (isSignUpSuccess && stateAuth.currentUser) {
+            handleSetUserRole(form.reg.userType === 'developer' ? UserRole.DEVELOPER : UserRole.COMPANY)
+            dispatch(authActions.setAuthModalType({type: false}))
+        }
+    }, [isSignUpSuccess, stateAuth.currentUser])
+
+    React.useEffect(() => {
+        setAuthErrorMessage(null)
+        setIsSignUpSuccess(false)
+    }, [type, form])
+
     const onSignUp = async () => {
         if (form.reg.password === form.reg.confirm) {
-
+            setAuthErrorMessage(null)
             try {
                 await createUserWithEmailAndPassword(auth, form.reg.email, form.reg.password);
-                dispatch(authActions.setAuthModalType({type: false}))
+                setIsSignUpSuccess(true)
                 console.log('Success Sign UP')
-                // routerNavigation("/dashboard");
             } catch (e) {
                 console.log('FAIL Sign UP')
                 const errorMessage = e.message;
                 console.log(errorMessage)
-                // setAuthErrorMessage(errorToMsg(errorMessage));
+                setAuthErrorMessage(errorToMsg(errorMessage));
             }
             // signUp({ password: form.reg.password, email: form.reg.email, username: form.reg.email });
+        } else {
+            setAuthErrorMessage('Passwords do not match')
         }
     };
 
@@ -117,6 +149,12 @@ const AuthModal = ({onClose, setType, type}: IAuthModalProps) => {
                             </Tabs>
                         </Box>
 
+                        {/*<button onClick={() => handleSetUserRole(UserRole.DEVELOPER)}>Fetch</button>*/}
+
+                        {authErrorMessage && <Stack sx={{width: '100%', marginTop: 2}} spacing={2}>
+                            <Alert severity="error">{authErrorMessage}</Alert>
+                        </Stack>}
+
                         {type === "login" && <>
                             <AuthInput id="login-email" label="Email" variant="standard" onChange={onChange}
                                        color="violet"/>
@@ -133,6 +171,22 @@ const AuthModal = ({onClose, setType, type}: IAuthModalProps) => {
                         </>}
 
                         {type === "registration" && <>
+                            <div className="mt-5">
+                                <ToggleButtonGroup
+                                    // @ts-ignore
+                                    color="violet"
+                                    value={form.reg.userType}
+                                    exclusive
+                                    onChange={(e, newAlignment: 'developer' | 'company') => setForm(prev => ({
+                                        ...prev,
+                                        reg: {...prev.reg, userType: newAlignment}
+                                    }))}
+                                    aria-label="Platform"
+                                >
+                                    <ToggleButton value="developer">Developer</ToggleButton>
+                                    <ToggleButton value="company">Company</ToggleButton>
+                                </ToggleButtonGroup>
+                            </div>
                             <AuthInput id="reg-email" label="Email" variant="standard" onChange={onChange}
                                        color="violet"/>
                             <AuthInput id="reg-password" label="Password" type="password" variant="standard"

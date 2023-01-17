@@ -8,8 +8,8 @@ const HomeLanding = () => {
     <HomeLandingStyled>
       <div className="container">
         <div className="row">
-          <div className="col-md-5">
-            <div className="mt-36">
+          <div className="col-md-8">
+            <div className="mt-2">
               <Typography variant="h2" component="h2" className="text-white font-bold uppercase">Jobs Finder</Typography>
               <Typography variant="h4" component="h4" className="text-slate-300">Easily find employees or work</Typography>
             </div>
