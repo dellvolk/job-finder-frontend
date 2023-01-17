@@ -19,4 +19,12 @@ export type IVacancy = {
     skills: string[]
 }
 
+export type IDeveloperVacancy = {
+    id: number;
+    username: string;
+    description: string;
+    location: string;
+    skills: string[];
+}
+
 

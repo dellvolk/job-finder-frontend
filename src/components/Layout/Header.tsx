@@ -141,9 +141,25 @@ const HeaderStyled = styled.div`
       align-items: center;
       margin-left: 100px;
       gap: 30px;
+      
+      a {
+        position: relative;
+      }
 
       a.active {
         color: #BC00A3;
+        
+        &::after {
+          content: "";
+          position: absolute;
+          height: 1.5px;
+          background-color: #BC00A3;
+          //width: 40px;
+          bottom: -5px;
+          width: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
       }
     }
   }

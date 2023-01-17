@@ -53,7 +53,7 @@ const AuthProvider: FC<AuthProviderProps> = ({
 
     const [currentUser, setCurrentUser] = useState<User>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [getUserInfo] = useLazyUserInfoQuery()
+    const [getUserInfo, {isFetching}] = useLazyUserInfoQuery()
     const userInfo = useAppSelector(selectUser)
 
     const auth = getAuth(app);
