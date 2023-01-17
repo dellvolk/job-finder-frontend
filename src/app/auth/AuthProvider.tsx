@@ -5,6 +5,8 @@ import {getAuth, User} from "firebase/auth";
 import useAppDispatch from "../hooks/useAppDispatch";
 import {authActions} from "../../store/auth/auth.slice";
 import { useLazyUserInfoQuery } from "../../store/user/user.api";
+import useAppSelector from "../hooks/useAppSelector";
+import {selectUser} from "../../store/user/user.slice";
 
 interface AuthProviderContextProps {
     app: FirebaseApp;
@@ -52,6 +54,7 @@ const AuthProvider: FC<AuthProviderProps> = ({
     const [currentUser, setCurrentUser] = useState<User>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [getUserInfo] = useLazyUserInfoQuery()
+    const userInfo = useAppSelector(selectUser)
 
     const auth = getAuth(app);
     auth.onAuthStateChanged((user) => {
@@ -70,7 +73,7 @@ const AuthProvider: FC<AuthProviderProps> = ({
         }
     }, [app, currentUser])
 
-    if (isLoading) {
+    if (isLoading || (!!currentUser && !userInfo)) {
         return <>Loading...</>;
     }
 
