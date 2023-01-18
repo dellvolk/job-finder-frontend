@@ -55,15 +55,15 @@ const FindPage: React.FC<IFindPageProps> = ({}) => {
                 <div className="row justify-center">
                     <div className="col-12 col-sm-8 col-md-6 ">
                         <Typography variant="h5" gutterBottom className="mb-5 uppercase">
-                            {`Find ${userInfo.role === UserRole.DEVELOPER ? 'JOB' : 'DEVELOPER'}`}
+                            {`Find ${userInfo.owner.role === UserRole.DEVELOPER ? 'JOB' : 'DEVELOPER'}`}
                         </Typography>
                         {end
                             ? <Typography variant="h6" gutterBottom className="mb-5">
-                                {`The ${userInfo.role === UserRole.DEVELOPER ? 'job list' : 'list of developers'} is empty`}
+                                {`The ${userInfo.owner.role === UserRole.DEVELOPER ? 'job list' : 'list of developers'} is empty`}
                             </Typography>
                             : currentItem &&
                             <Card
-                                role={userInfo.role}
+                                role={userInfo.owner.role}
                                 data={currentItem}
                                 onLike={onLike}
                                 onDislike={onDislike}

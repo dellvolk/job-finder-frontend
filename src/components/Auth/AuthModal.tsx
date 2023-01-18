@@ -17,6 +17,7 @@ import Stack from '@mui/material/Stack';
 import {usePostUserTypeMutation} from "../../store/user/user.api";
 import {UserRole} from "../../store/user/user.types";
 import useAppSelector from "../../app/hooks/useAppSelector";
+import {AuthProviderContext} from "../../app/auth/AuthProvider";
 
 interface IAuthModalProps {
     onClose: () => void;
@@ -45,6 +46,7 @@ const AuthModal = ({onClose, setType, type}: IAuthModalProps) => {
             email: "", password: "", confirm: "", userType: 'developer'
         }
     });
+    const { setIsRegistered } = React.useContext(AuthProviderContext)
     const stateAuth = useAppSelector(selectAuth)
     const [postUserType, {data, isSuccess, ...pp}] = usePostUserTypeMutation()
     const [isSignUpSuccess, setIsSignUpSuccess] = React.useState(false)
@@ -95,6 +97,7 @@ const AuthModal = ({onClose, setType, type}: IAuthModalProps) => {
     React.useEffect(() => {
         setAuthErrorMessage(null)
         setIsSignUpSuccess(false)
+        setIsRegistered() //
     }, [type, form])
 
     const onSignUp = async () => {

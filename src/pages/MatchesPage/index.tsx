@@ -29,7 +29,7 @@ const MatchesPage: React.FC<IMatchesPageProps> = ({}) => {
                 <div className="row">
                     {data.map(i => (
                         <div className="col-12 col-md-6 mb-3.5" key={i.id}>
-                            <MatchCard role={userInfo.role} data={i}/>
+                            <MatchCard role={userInfo.owner.role} data={i}/>
                         </div>
                     ))}
                 </div>

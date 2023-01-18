@@ -1,8 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {IUser} from "./user.types";
-import authApi from "../auth/auth.api";
 import userApi from "./user.api";
-import { RootState } from "../store";
+import {RootState} from "../store";
 
 export type TAuthModalType = "login" | "registration" | false
 
@@ -20,7 +19,9 @@ const userSlice = createSlice({
         builder.addMatcher(userApi.endpoints.userInfo.matchFulfilled, (state, {payload}) => {
             state.user = {...state.user, ...payload};
         });
-
+        builder.addMatcher(userApi.endpoints.updateDeveloperInfo.matchFulfilled, (state, {payload}) => {
+            state.user = {...state.user, ...payload};
+        });
         builder.addMatcher(userApi.endpoints.postUserType.matchFulfilled, (state, {payload}) => {
             state.user = {...state.user, ...payload};
         });

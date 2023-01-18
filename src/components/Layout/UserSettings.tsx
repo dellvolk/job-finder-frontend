@@ -1,13 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import {stringAvatar, stringToColor} from '../../app/helpers';
-import {useUserInfoQuery} from '../../store/user/user.api';
 import {Autocomplete, Avatar, Badge, Button, Chip, Stack, TextField, Typography} from '@mui/material';
-import useAppSelector from "../../app/hooks/useAppSelector";
-import {selectUser} from "../../store/user/user.slice";
-import {UserRole} from "../../store/user/user.types";
+import {ICompany, IDeveloper, isCompany, isDeveloper, UserRole} from "../../store/user/user.types";
 import Input from "../Input";
 import EditIcon from '@mui/icons-material/Edit';
+import useAppSelector from '../../app/hooks/useAppSelector';
+import {selectUser} from '../../store/user/user.slice';
+import {useUpdateCompanyInfoMutation, useUpdateDeveloperInfoMutation} from "../../store/user/user.api";
 
 const fileTypes = [
     // "image/apng",
@@ -32,25 +32,39 @@ interface IUserSettingsProps {
 
 const UserSettings: React.FC<IUserSettingsProps> = ({}) => {
     const inputRef = React.useRef<HTMLInputElement>()
-    // const user = useAppSelector(selectUser)
+    const userInfo = useAppSelector(selectUser)
 
     // console.log({user})
 
     const [file, setFile] = React.useState<File | null>(null)
-    const [data, setData] = React.useState<any>({
-        username: 'Some username',
-        description: "Some description",
-        skills: ['React.JS', 'HTML', 'CSS3']
-    });
+    const [data, setData] = React.useState<any>(null);
+    const [updateDeveloper, { isLoading: isLoadingUpdateDeveloper }] = useUpdateDeveloperInfoMutation()
+    const [updateCompany, {isLoading: isLoadingUpdateCompany}] = useUpdateCompanyInfoMutation()
 
-    const user = {
-        id: 0,
-        email: 'testuser@mail.com',
-        role: UserRole.DEVELOPER,
-        firebaseUserId: 'dasojdioqwjiodjq',
-    }
+    React.useEffect(() => {
+        if (!userInfo) return void 0;
 
-    if (!user) {
+        setData(() => {
+            if (isDeveloper(userInfo)) {
+                return {
+                    description: userInfo.description,
+                    firstName: userInfo.firstName,
+                    lastName: userInfo.lastName,
+                    position: userInfo.position,
+                    skills: userInfo.skills,
+                }
+            }
+
+            if (isCompany(userInfo)) {
+                return {
+                    description: userInfo.description,
+                    title: userInfo.title,
+                }
+            }
+        })
+    }, [userInfo])
+
+    if (!userInfo || !data) {
         return <UserSettingsStyled>
             Loading...
         </UserSettingsStyled>
@@ -70,11 +84,9 @@ const UserSettings: React.FC<IUserSettingsProps> = ({}) => {
         inputRef.current.click()
     }
 
-    console.log({file})
-
     const getAvatarProps = () => {
         const sx = {
-            bgcolor: stringToColor(user.email),
+            bgcolor: stringToColor(userInfo.owner.email),
             width: 60,
             height: 60,
         }
@@ -91,7 +103,7 @@ const UserSettings: React.FC<IUserSettingsProps> = ({}) => {
         }
 
         return {
-            ...stringAvatar(user.email),
+            ...stringAvatar(userInfo.owner.email),
             sx
         }
     }
@@ -102,6 +114,13 @@ const UserSettings: React.FC<IUserSettingsProps> = ({}) => {
 
     const onSave = () => {
         console.log({data})
+        if (isDeveloper(userInfo)) {
+            updateDeveloper({...userInfo, ...data})
+        }
+
+        if (isCompany(userInfo)) {
+            updateCompany({...userInfo, ...data})
+        }
     }
 
 
@@ -126,49 +145,73 @@ const UserSettings: React.FC<IUserSettingsProps> = ({}) => {
                 </Badge>
                 <input ref={inputRef} type="file" className="hidden" onChange={onChangePhoto}/>
                 <Typography variant="h5" gutterBottom>
-                    {user.email}
+                    {userInfo.owner.email}
                 </Typography>
             </Stack>
             <div className="mt-7">
                 <div className="row">
-                    <div className="col-10">
-                        <Input value={data.username} onChange={v => handleChange(v, "username")} label={"Username"}/>
-                    </div>
-                    <div className="col-10 mt-5">
-                        <Input
-                            value={data.description}
-                            onChange={v => handleChange(v, "description")}
-                            label={"Description"}
-                            multiline
-                            // minRows={4}
-                        />
-                    </div>
-                    <div className="col-10 mt-5">
-                        <Autocomplete
-                            multiple
-                            id="tags-filled"
-                            options={[]}
-                            defaultValue={data.skills || []}
-                            freeSolo
-                            renderTags={(value: readonly string[], getTagProps) =>
-                                value.map((option: string, index: number) => (
-                                    <Chip variant="outlined" label={option} {...getTagProps({index})} />
-                                ))
-                            }
-                            onChange={(v, e) => handleChange(e, 'skills')}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    variant="standard"
-                                    color="violet"
-                                    label="Skills"
-                                    placeholder="Enter your skills"
-                                />
-                            )}
-                        />
-                    </div>
+                    {isDeveloper(userInfo) && <>
+                        <div className="col-5">
+                            <Input value={data.firstName} onChange={v => handleChange(v, "firstName")} label={"First Name"}/>
+                        </div>
+                        <div className="col-5">
+                            <Input value={data.lastName} onChange={v => handleChange(v, "lastName")} label={"Last Name"}/>
+                        </div>
+                        <div className="col-10 mt-5">
+                            <Input value={data.position} onChange={v => handleChange(v, "position")} label={"Position"}/>
+                        </div>
+                        <div className="col-10 mt-5">
+                            <Input
+                                value={data.description}
+                                onChange={v => handleChange(v, "description")}
+                                label={"Description"}
+                                multiline
+                                // minRows={4}
+                            />
+                        </div>
+                        <div className="col-10 mt-5">
+                            <Autocomplete
+                                multiple
+                                id="tags-filled"
+                                options={[]}
+                                defaultValue={data.skills || []}
+                                freeSolo
+                                renderTags={(value: readonly string[], getTagProps) =>
+                                    value.map((option: string, index: number) => (
+                                        <Chip variant="outlined" label={option} {...getTagProps({index})} />
+                                    ))
+                                }
+                                onChange={(v, e) => handleChange(e, 'skills')}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        variant="standard"
+                                        color="violet"
+                                        label="Skills"
+                                        placeholder="Enter your skills"
+                                    />
+                                )}
+                            />
+                        </div>
+                    </>}
+
+                    {isCompany(userInfo) && <>
+                        <div className="col-10">
+                            <Input value={data.title} onChange={v => handleChange(v, "title")} label={"Company name"}/>
+                        </div>
+                        <div className="col-10 mt-5">
+                            <Input
+                                value={data.description}
+                                onChange={v => handleChange(v, "description")}
+                                label={"Description"}
+                                multiline
+                                // minRows={4}
+                            />
+                        </div>
+                    </>}
+
                     <div className="col-6 mt-10">
-                        <Button color="white" variant="contained" disabled={false} onClick={onSave}>Save
+                        <Button color="white" variant="contained" disabled={isLoadingUpdateCompany || isLoadingUpdateDeveloper} onClick={onSave}>Save
                             changes</Button>
                     </div>
                 </div>

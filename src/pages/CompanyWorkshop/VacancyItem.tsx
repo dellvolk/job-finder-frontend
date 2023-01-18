@@ -8,13 +8,16 @@ import IconButton from "@mui/material/IconButton";
 import Collapse from "@mui/material/Collapse";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import {IVacancy} from "../../store/user/user.types";
+import Typography from '@mui/material/Typography';
+import Chip from "@mui/material/Chip";
+import Stack from "@mui/material/Stack";
 
 interface IVacancyItemProps {
-    title: string,
-    description: string
+    data: IVacancy
 }
 
-const VacancyItem: React.FC<IVacancyItemProps> = ({title, description}) => {
+const VacancyItem: React.FC<IVacancyItemProps> = ({data: {title, description, locationType, tags, location}}) => {
     const [open, setOpen] = React.useState(false);
     return (
         <VacancyItemStyled className="vacancy-item">
@@ -33,10 +36,25 @@ const VacancyItem: React.FC<IVacancyItemProps> = ({title, description}) => {
                     }
                 >
                 </CardHeader>
-                <div style={{ backgroundColor: 'rgba(211,211,211,0.4)'}}>
+                <div style={{ backgroundColor: 'rgb(45 45 45)'}}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <CardContent>
-                            <Container sx={{ height: 'auto', }}>{description}</Container>
+                            <Container sx={{ height: 'auto', }}>
+                                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                                    {`${locationType} / ${location}`}
+                                </Typography>
+                                <Typography variant="h5" component="div">
+                                    {title}
+                                </Typography>
+                                <Stack direction="row" spacing={1} className="mb-5 mt-2.5">
+                                    {tags.map((i, idx) => (
+                                        <Chip label={i} key={`${i}_&_${idx}`} color="primary" variant="outlined" />
+                                    ))}
+                                </Stack>
+                                <Typography variant="body2" className={"whitespace-pre-wrap"}>
+                                    {description}
+                                </Typography>
+                            </Container>
                         </CardContent>
                     </Collapse>
                 </div>

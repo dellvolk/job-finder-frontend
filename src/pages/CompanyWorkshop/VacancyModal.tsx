@@ -8,7 +8,12 @@ import Stack from "@mui/material/Stack";
 import Alert from "@mui/material/Alert";
 import Modal from "@mui/material/Modal";
 import Input from "../../components/Input";
-import {IVacancy} from "../../store/user/user.types";
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import {IVacancy, IVacancyDto, VacancyEntityLocationType} from "../../store/user/user.types";
 
 const style = {
     position: "absolute",
@@ -25,21 +30,25 @@ const style = {
 interface IVacancyModalProps {
     open: boolean,
     onClose: () => void,
-    submit: (data:IVacancy) => void,
+    submit: (data:IVacancyDto) => void,
     defaultValues?: IVacancy,
 }
 
 const VacancyModal: React.FC<IVacancyModalProps> = ({submit, defaultValues, open, onClose}) => {
     const [errorMessage, setErrorMessage] = React.useState(null);
-    const [data, setData] = React.useState<IVacancy>({
+    const [data, setData] = React.useState<IVacancyDto>({
         title: '',
         description: '',
-        skills: []
+        tags: [],
+        location: '',
+        published: true,
+        locationType: VacancyEntityLocationType.HYBRID
     })
 
     React.useEffect(() => {
         if (!!defaultValues) {
-            setData(defaultValues)
+            const {id, ...other} = defaultValues
+            setData(other)
         }
     }, [defaultValues])
 
@@ -58,16 +67,14 @@ const VacancyModal: React.FC<IVacancyModalProps> = ({submit, defaultValues, open
             return setErrorMessage('Description is empty!')
         }
 
-        if (!data.skills || data?.skills.length === 0) {
-            return setErrorMessage('Skills are empty!')
+        if (!data.tags || data?.tags.length === 0) {
+            return setErrorMessage('Tags are empty!')
         }
 
 
         console.log('Submit', {data})
         submit(data)
     }
-
-    console.log({open})
 
     return (
         <>
@@ -109,6 +116,7 @@ const VacancyModal: React.FC<IVacancyModalProps> = ({submit, defaultValues, open
                                         className="w-full"
                                         containerClasses="w-full mb-3.5"
                                         onChange={(e) => onChange('description', e)}
+                                        multiline
                                     />
                                 </div>
                                 <div className="col-12">
@@ -116,7 +124,7 @@ const VacancyModal: React.FC<IVacancyModalProps> = ({submit, defaultValues, open
                                         multiple
                                         id="tags-filled"
                                         options={[]}
-                                        defaultValue={data.skills || []}
+                                        defaultValue={data.tags || []}
                                         freeSolo
                                         // @ts-ignore
                                         renderTags={(value: readonly string[], getTagProps) =>
@@ -125,7 +133,7 @@ const VacancyModal: React.FC<IVacancyModalProps> = ({submit, defaultValues, open
                                             ))
                                         }
                                         // @ts-ignore
-                                        onChange={(e, v) => onChange('skills', v)}
+                                        onChange={(e, v) => onChange('tags', v)}
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
@@ -135,6 +143,33 @@ const VacancyModal: React.FC<IVacancyModalProps> = ({submit, defaultValues, open
                                                 placeholder="Enter your skills"
                                             />
                                         )}
+                                    />
+                                </div>
+                                <div className="col-12 mt-5">
+                                    <FormControl>
+                                        <FormLabel id="demo-radio-buttons-group-label" color="secondary">Location type</FormLabel>
+                                        <RadioGroup
+                                            row
+                                            aria-labelledby="demo-radio-buttons-group-label"
+                                            defaultValue="female"
+                                            name="radio-buttons-group"
+                                            color="secondary"
+                                            value={data.locationType}
+                                            onChange={(event, value) => onChange('locationType', value)}
+                                        >
+                                            <FormControlLabel value={VacancyEntityLocationType.HYBRID} control={<Radio />} label="Hybrid" />
+                                            <FormControlLabel value={VacancyEntityLocationType.OFFICE} control={<Radio />} label="Office" />
+                                            <FormControlLabel value={VacancyEntityLocationType.REMOTE} control={<Radio />} label="Remote" />
+                                        </RadioGroup>
+                                    </FormControl>
+                                </div>
+                                <div className="col-12">
+                                    <Input
+                                        label="Location"
+                                        value={data.location}
+                                        className="w-full"
+                                        containerClasses="w-full mb-3.5"
+                                        onChange={(e) => onChange('location', e)}
                                     />
                                 </div>
                             </div>

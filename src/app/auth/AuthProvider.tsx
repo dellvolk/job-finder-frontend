@@ -12,6 +12,8 @@ interface AuthProviderContextProps {
     app: FirebaseApp;
     currentUser: User | null;
     isLoggedIn: boolean;
+    isRegistered: boolean
+    setIsRegistered: () => void
 }
 
 export const AuthProviderContext = createContext<AuthProviderContextProps>(null);
@@ -52,6 +54,7 @@ const AuthProvider: FC<AuthProviderProps> = ({
     const dispatch = useAppDispatch()
 
     const [currentUser, setCurrentUser] = useState<User>(null);
+    const [isRegistered, setIsRegistered] = React.useState<boolean>(false)
     const [isLoading, setIsLoading] = useState(true);
     const [getUserInfo, {isFetching}] = useLazyUserInfoQuery()
     const userInfo = useAppSelector(selectUser)
@@ -60,6 +63,8 @@ const AuthProvider: FC<AuthProviderProps> = ({
     auth.onAuthStateChanged((user) => {
         setCurrentUser(user);
         setIsLoading(false);
+    }, undefined, () => {
+
     });
 
     React.useEffect(() => {
@@ -68,17 +73,19 @@ const AuthProvider: FC<AuthProviderProps> = ({
             currentUser,
             isLoggedIn: !!currentUser
         }))
-        if (currentUser) {
+        if (currentUser && !isRegistered) {
             getUserInfo()
         }
-    }, [app, currentUser])
+    }, [app, currentUser, isRegistered])
 
-    if (isLoading || (!!currentUser && !userInfo)) {
+    if (isLoading
+        // || (!!currentUser && !userInfo)
+    ) {
         return <>Loading...</>;
     }
 
     return (
-        <AuthProviderContext.Provider value={{app, currentUser, isLoggedIn: !!currentUser}}>
+        <AuthProviderContext.Provider value={{app, currentUser, isLoggedIn: !!currentUser, isRegistered, setIsRegistered: () => setIsRegistered(true)}}>
             {children}
         </AuthProviderContext.Provider>
     );

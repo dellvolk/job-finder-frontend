@@ -3,11 +3,12 @@ import styled from 'styled-components';
 import useAppSelector from "../../app/hooks/useAppSelector";
 import {selectUser} from "../../store/user/user.slice";
 import {Navigate} from "react-router-dom";
-import {IVacancy, UserRole} from "../../store/user/user.types";
+import {IVacancy, IVacancyDto, UserRole} from "../../store/user/user.types";
 import VacancyItem from "./VacancyItem";
 import VacancyModal from "./VacancyModal";
 import { Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import {useAddVacancyMutation, useGetVacanciesQuery, useLazyGetVacanciesQuery} from "../../store/user/user.api";
 
 interface ICompanyWorkshopProps {
 
@@ -16,35 +17,32 @@ interface ICompanyWorkshopProps {
 const CompanyWorkshop: React.FC<ICompanyWorkshopProps> = ({}) => {
     const userInfo = useAppSelector(selectUser)
     const [open, setOpen] = React.useState<boolean>(false)
+    console.log('fetch')
+    const [fetchVacancies, {data}] = useLazyGetVacanciesQuery()
+    const [addVacancy, {isSuccess: isSuccessAdded}] = useAddVacancyMutation()
 
-    if (!userInfo) {
+    React.useEffect(() => {
+        if (isSuccessAdded) {
+            setOpen(false)
+        }
+    }, [isSuccessAdded])
+
+    React.useEffect(() => {
+        if (userInfo) {
+            fetchVacancies()
+        }
+    }, [userInfo])
+
+    if (!userInfo || !data) {
         return <></>
     }
 
-    if (userInfo.role !== UserRole.COMPANY) {
+    if (userInfo.owner.role !== UserRole.COMPANY) {
         return <Navigate to={'/'}/>
     }
 
-    const data = [
-        {
-            title: 'First item', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?'
-        },
-        {
-            title: 'Second item', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?'
-        },
-        {
-            title: '3 item', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?'
-        },
-        {
-            title: '4 item', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?'
-        },
-        {
-            title: '5 item', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad doloribus esse et nihil optio quibusdam quisquam repudiandae sequi. Expedita fugit laborum molestias nobis, provident sapiente voluptate. Accusamus consequuntur cumque deleniti earum expedita id libero modi molestiae mollitia natus perspiciatis praesentium, quasi quos reprehenderit sint sit sunt temporibus ullam velit, voluptatem?'
-        },
-    ]
-
-    const handleAdd = (data:IVacancy) => {
-        console.log('Create', {data})
+    const handleAdd = (data:IVacancyDto) => {
+        addVacancy(data)
     }
 
     return (
@@ -59,7 +57,7 @@ const CompanyWorkshop: React.FC<ICompanyWorkshopProps> = ({}) => {
                     </div>
                     {data.map((i, idx) => (
                         <div className="col-12 col-md-8" key={i.title + i.description + idx}>
-                            <VacancyItem title={i.title} description={i.description} />
+                            <VacancyItem data={i} />
                         </div>
                     ))}
                 </div>
