@@ -1,6 +1,7 @@
 import {createApi} from "@reduxjs/toolkit/query/react"
 import baseQuery from "../../app/api";
 import { LoginRequest, LoginResponse, SignUpRequest } from "../../app/interfaces/auth.types"
+import userApi from "../user/user.api";
 
 const authApi = createApi({
     reducerPath: 'api/auth',
@@ -11,7 +12,15 @@ const authApi = createApi({
                 url: "auth/jwt/create",
                 method: "POST",
                 body: credentials
-            })
+            }),
+            // async onQueryStarted(_, {dispatch, queryFulfilled}) {
+            //     try {
+            //         dispatch(userApi.util.resetApiState())
+            //         await queryFulfilled
+            //         dispatch(userApi.endpoints.userInfo.initiate())
+            //     } catch {
+            //     }
+            // },
         }),
 		signup: builder.mutation<LoginResponse, SignUpRequest>({
 			query: (credentials) => ({

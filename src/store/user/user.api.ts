@@ -12,18 +12,11 @@ const userApi = createApi({
                 method: 'POST',
                 body: {role: role.userRole}
             }),
-            async onQueryStarted(activation_code, {dispatch, queryFulfilled}) {
+            async onQueryStarted(_, {dispatch, queryFulfilled}) {
                 try {
                     dispatch(userApi.util.resetApiState())
-
                     await queryFulfilled
                     dispatch(userApi.endpoints.userInfo.initiate())
-                    // dispatch(updateUser(updatedPost))
-                    // const patchResult = dispatch(
-                    //     userApi.util.updateQueryData('getUserInfo', undefined, (draft) => {
-                    //         Object.assign(draft, updatedPost)
-                    //     })
-                    // )
                 } catch {
                 }
             },

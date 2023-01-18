@@ -12,6 +12,7 @@ import HomeRepairServiceIcon from '@mui/icons-material/HomeRepairService';
 import useAppSelector from "../../app/hooks/useAppSelector";
 import {selectUser} from "../../store/user/user.slice";
 import {UserRole} from "../../store/user/user.types";
+import userApi from "../../store/user/user.api";
 
 interface IHeaderProps {
     openSettings: () => void
@@ -36,6 +37,7 @@ const Header: React.FC<IHeaderProps> = ({openSettings}) => {
         // dispatch(logout())
         try {
             await signOut(auth);
+            dispatch(userApi.util.resetApiState())
             // dispatch(authActions.setAuthModalType({type: false}))
             console.log('Success Logout')
             // routerNavigation("/dashboard");

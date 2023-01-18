@@ -97,7 +97,11 @@ const AuthModal = ({onClose, setType, type}: IAuthModalProps) => {
     React.useEffect(() => {
         setAuthErrorMessage(null)
         setIsSignUpSuccess(false)
-        setIsRegistered() //
+        if (type === 'login') {
+            setIsRegistered(false) //
+        } else {
+            setIsRegistered(true) //
+        }
     }, [type, form])
 
     const onSignUp = async () => {

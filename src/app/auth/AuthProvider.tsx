@@ -13,7 +13,7 @@ interface AuthProviderContextProps {
     currentUser: User | null;
     isLoggedIn: boolean;
     isRegistered: boolean
-    setIsRegistered: () => void
+    setIsRegistered: (v:boolean) => void
 }
 
 export const AuthProviderContext = createContext<AuthProviderContextProps>(null);
@@ -85,7 +85,7 @@ const AuthProvider: FC<AuthProviderProps> = ({
     }
 
     return (
-        <AuthProviderContext.Provider value={{app, currentUser, isLoggedIn: !!currentUser, isRegistered, setIsRegistered: () => setIsRegistered(true)}}>
+        <AuthProviderContext.Provider value={{app, currentUser, isLoggedIn: !!currentUser, isRegistered, setIsRegistered: (v) => setIsRegistered(v)}}>
             {children}
         </AuthProviderContext.Provider>
     );
