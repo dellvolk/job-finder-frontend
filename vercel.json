@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/api/:path(.*)", "destination": "https://jobs-finder-ten.vercel.app/:path" },
+    { "source": "/api/:path(.*)", "destination": "https://jobs-finder-backend.herokuapp.com/:path" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
