@@ -3,28 +3,40 @@ import styled from 'styled-components';
 import CardMui from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
 import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import {red} from '@mui/material/colors';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
-import {IDeveloperVacancy, UserRole} from "../../store/user/user.types";
+import {IMatch, UserRole} from "../../store/user/user.types";
 import {stringAvatar, stringToColor} from "../../app/helpers";
 import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
-import Fab from '@mui/material/Fab';
-import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import NextPlanIcon from '@mui/icons-material/NextPlan';
 
 interface IMatchCardProps {
     role: UserRole,
-    data: IDeveloperVacancy,
+    data: IMatch,
 }
 
-const MatchCard: React.FC<IMatchCardProps> = ({data: {username, id, skills, location, description}, role}) => {
+const MatchCard: React.FC<IMatchCardProps> = ({data, role}) => {
+
+    const {username, skills, location, description} = React.useMemo(() => {
+        if (role === UserRole.COMPANY) {
+            return {
+                username: `${data.developer.firstName} ${data.developer.lastName}`,
+                skills: data.developer.skills,
+                location: data.developer.position,
+                description: data.developer.description
+            }
+        }
+
+        if (role === UserRole.DEVELOPER) {
+            return {
+                username: data.company.title,
+                skills: data.vacancy?.tags,
+                location: `${data.vacancy?.location} / ${data.vacancy?.locationType}`,
+                description: data.company.description
+            }
+        }
+    }, [role, data])
+
     return (
         <>
             <MatchCardStyled sx={{width: '100%'}}>

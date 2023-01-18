@@ -40,17 +40,18 @@ const Card: React.FC<ICardProps> = ({data:_data, onLike, onSkip, onDislike, role
         setData(() => {
             if (isSearchVacancy(_data)) {
                 return {
-                    title: _data.data.title,
+                    username: _data.data.title,
                     description: _data.data.description,
                     location: _data.data.location,
                     locationType: _data.data.locationType,
-                    tags: _data.data.tags
+                    tags: _data.data.tags,
+                    title: _data.data.title,
                 }
             }
 
             if (isSearchDeveloper(_data)) {
                 return {
-                    title: `${_data.data.firstName} ${_data.data.lastName}`,
+                    username: `${_data.data.firstName} ${_data.data.lastName}`,
                     description: _data.data.description,
                     position: _data.data.position,
                     locationType: '',
@@ -62,18 +63,18 @@ const Card: React.FC<ICardProps> = ({data:_data, onLike, onSkip, onDislike, role
 
     if (!data) return <></>
 
-    const {title, description, location, locationType, tags, position} = data
+    const {username, description, location, locationType, tags, position, title} = data
 
     return (
         <>
             <CardStyled sx={{ width: '100%' }}>
                 <CardHeader
                     avatar={
-                        <Avatar sx={{ bgcolor: stringToColor(title) }} aria-label="recipe">
-                            {stringAvatar(title)?.children}
+                        <Avatar sx={{ bgcolor: stringToColor(username) }} aria-label="recipe">
+                            {stringAvatar(username)?.children}
                         </Avatar>
                     }
-                    title={title}
+                    title={username}
                     subheader={position || `${location} / ${locationType}`}
                 />
                 <CardContent>
@@ -82,6 +83,9 @@ const Card: React.FC<ICardProps> = ({data:_data, onLike, onSkip, onDislike, role
                             <Chip label={i} key={`${i}_&_${idx}`} color="primary" variant="outlined" />
                         ))}
                     </Stack>
+                    {title && <Typography variant="h5" component="div">
+                        {title}
+                    </Typography>}
                     <Typography variant="body2" color="text.secondary" className="whitespace-pre-wrap">
                         {description}
                     </Typography>

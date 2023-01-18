@@ -6,7 +6,7 @@ export const errorHandler: Middleware = (api: MiddlewareAPI) => (next) => (actio
     if (action?.payload?.status === 403) { // Non auth
         console.log('non auth')
         console.log({api, action})
-        api.dispatch(logout())
+        // api.dispatch(logout())
     }
     // if (isRejectedWithValue(action)) {
     //     console.warn('We got a rejected action!')

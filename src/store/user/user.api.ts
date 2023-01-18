@@ -1,6 +1,18 @@
 import {createApi} from "@reduxjs/toolkit/query/react"
 import baseQuery from "../../app/api"
-import {ICompany, IDeveloper, ISearch, IUser, IVacancy, IVacancyDto, Owner, SearchType, UserRole} from "./user.types";
+import {
+    ICompany,
+    IDeveloper, IMatch,
+    IReactionRequest,
+    IReactionResponse,
+    ISearch,
+    IUser,
+    IVacancy,
+    IVacancyDto,
+    Owner,
+    SearchType,
+    UserRole
+} from "./user.types";
 
 const userApi = createApi({
     reducerPath: 'api/user',
@@ -80,6 +92,16 @@ const userApi = createApi({
                 id: i.id
             }),)
         }),
+        reaction: builder.mutation<IReactionResponse | void, IReactionRequest>({
+            query: (data) => ({
+                url: `/api/interactivity/reaction`,
+                method: 'POST',
+                body: data
+            })
+        }),
+        getMatches: builder.query<IMatch[], void>({
+            query: () => `/api/interactivity/matches`,
+        }),
     })
 });
 
@@ -93,7 +115,9 @@ export const {
     useAddVacancyMutation,
     useLazyGetVacanciesQuery,
     useSearchQuery,
-    useLazySearchQuery
+    useLazySearchQuery,
+    useReactionMutation,
+    useLazyGetMatchesQuery
 } = userApi;
 
 export default userApi

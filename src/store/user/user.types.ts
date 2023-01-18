@@ -56,6 +56,20 @@ export interface ICompany extends IUserData{
     owner: CompanyOwner
 }
 
+export enum ReactionType {
+    LIKE = 'like',
+    DENY = 'deny',
+}
+
+export interface IReactionRequest {
+    type: ReactionType
+    targetId: number
+}
+
+export interface IReactionResponse {
+
+}
+
 export type IUser = ICompany | IDeveloper
 
 export enum VacancyEntityLocationType {
@@ -130,6 +144,15 @@ export const isSearchDeveloper = (search_data:ISearch):search_data is ISearchDev
 
 export const isSearchVacancy = (search_data:ISearch):search_data is ISearchVacancy => {
     return search_data.type === SearchType.VACANCY
+}
+
+export interface IMatch {
+    id: number
+    created_at: Date;
+    updated_at: Date;
+    developer: IDeveloper;
+    company: ICompany;
+    vacancy?: IVacancy;
 }
 
 // function isSearchDeveloper<T extends IDeveloper>(search_data: T): search_data is IDeveloper {

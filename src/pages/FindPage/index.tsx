@@ -4,9 +4,8 @@ import Card from "./Card";
 import useAppSelector from "../../app/hooks/useAppSelector";
 import {selectUser} from "../../store/user/user.slice";
 import Typography from '@mui/material/Typography';
-import {IDeveloperVacancy, ISearch, UserRole} from "../../store/user/user.types";
-import vanila_data from "./data";
-import {useLazySearchQuery} from "../../store/user/user.api";
+import {ISearch, ReactionType, UserRole} from "../../store/user/user.types";
+import {useLazySearchQuery, useReactionMutation} from "../../store/user/user.api";
 
 interface IFindPageProps {
 
@@ -16,6 +15,7 @@ const FindPage: React.FC<IFindPageProps> = ({}) => {
     const userInfo = useAppSelector(selectUser)
 
     const [search, {data}] = useLazySearchQuery()
+    const [reaction, {}] = useReactionMutation()
 
     // const [data, setData] = React.useState(vanila_data)
     const [currentItem, setCurrentItem] = React.useState<ISearch>(null)
@@ -46,10 +46,18 @@ const FindPage: React.FC<IFindPageProps> = ({}) => {
     }
 
     const onLike = () => {
+        reaction({
+            targetId: currentItem.id,
+            type: ReactionType.LIKE
+        })
         next()
     }
 
     const onDislike = () => {
+        reaction({
+            targetId: currentItem.id,
+            type: ReactionType.DENY
+        })
         next()
     }
 
