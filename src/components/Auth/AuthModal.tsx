@@ -178,6 +178,7 @@ const AuthModal = ({onClose, setType, type}: IAuthModalProps) => {
                                 <ToggleButtonGroup
                                     // @ts-ignore
                                     color="violet"
+                                    fullWidth
                                     value={form.reg.userType}
                                     exclusive
                                     onChange={(e, newAlignment: 'developer' | 'company') => setForm(prev => ({

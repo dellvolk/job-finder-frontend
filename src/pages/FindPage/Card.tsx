@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
-import {IDeveloperVacancy, UserRole} from "../../store/user/user.types";
+import {IDeveloperVacancy, ISearch, isSearchDeveloper, isSearchVacancy, UserRole} from "../../store/user/user.types";
 import {stringAvatar, stringToColor} from "../../app/helpers";
 import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
@@ -21,28 +21,64 @@ import NextPlanIcon from '@mui/icons-material/NextPlan';
 
 interface ICardProps {
     role: UserRole,
-    data: IDeveloperVacancy,
+    data: ISearch,
     onLike: () => void
     onDislike: () => void
     onSkip: () => void
 }
 
-const Card: React.FC<ICardProps> = ({data: {username, id, skills, location, description}, onLike, onSkip, onDislike, role}) => {
+const Card: React.FC<ICardProps> = ({data:_data, onLike, onSkip, onDislike, role}) => {
+    const [data, setData] = React.useState(null)
+    const isVacancy = isSearchVacancy(_data)
+    const isDeveloper = isSearchDeveloper(_data)
+
+    if (isSearchDeveloper(_data)) {
+        console.log(_data)
+    }
+
+    React.useEffect(() => {
+        setData(() => {
+            if (isSearchVacancy(_data)) {
+                return {
+                    title: _data.data.title,
+                    description: _data.data.description,
+                    location: _data.data.location,
+                    locationType: _data.data.locationType,
+                    tags: _data.data.tags
+                }
+            }
+
+            if (isSearchDeveloper(_data)) {
+                return {
+                    title: `${_data.data.firstName} ${_data.data.lastName}`,
+                    description: _data.data.description,
+                    position: _data.data.position,
+                    locationType: '',
+                    tags: _data.data.skills
+                }
+            }
+        })
+    }, [_data])
+
+    if (!data) return <></>
+
+    const {title, description, location, locationType, tags, position} = data
+
     return (
         <>
             <CardStyled sx={{ width: '100%' }}>
                 <CardHeader
                     avatar={
-                        <Avatar sx={{ bgcolor: stringToColor(username) }} aria-label="recipe">
-                            {stringAvatar(username)?.children}
+                        <Avatar sx={{ bgcolor: stringToColor(title) }} aria-label="recipe">
+                            {stringAvatar(title)?.children}
                         </Avatar>
                     }
-                    title={username}
-                    subheader={location}
+                    title={title}
+                    subheader={position || `${location} / ${locationType}`}
                 />
                 <CardContent>
                     <Stack direction="row" spacing={1} className="mb-5">
-                        {skills.map((i, idx) => (
+                        {tags.map((i, idx) => (
                             <Chip label={i} key={`${i}_&_${idx}`} color="primary" variant="outlined" />
                         ))}
                     </Stack>
@@ -51,12 +87,6 @@ const Card: React.FC<ICardProps> = ({data: {username, id, skills, location, desc
                     </Typography>
                 </CardContent>
                 <CardActions disableSpacing className="">
-                    {/*<IconButton aria-label="add to favorites">*/}
-                    {/*    <FavoriteIcon />*/}
-                    {/*</IconButton>*/}
-                    {/*<IconButton aria-label="share">*/}
-                    {/*    <ShareIcon />*/}
-                    {/*</IconButton>*/}
                     <Fab variant="extended" color="secondary" style={{color: '#fff'}} onClick={onDislike}>
                         <ThumbDownIcon sx={{ mr: 1 }} />
                         Dislike

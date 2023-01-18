@@ -4,8 +4,9 @@ import Card from "./Card";
 import useAppSelector from "../../app/hooks/useAppSelector";
 import {selectUser} from "../../store/user/user.slice";
 import Typography from '@mui/material/Typography';
-import {IDeveloperVacancy, UserRole} from "../../store/user/user.types";
+import {IDeveloperVacancy, ISearch, UserRole} from "../../store/user/user.types";
 import vanila_data from "./data";
+import {useLazySearchQuery} from "../../store/user/user.api";
 
 interface IFindPageProps {
 
@@ -14,9 +15,17 @@ interface IFindPageProps {
 const FindPage: React.FC<IFindPageProps> = ({}) => {
     const userInfo = useAppSelector(selectUser)
 
-    const [data, setData] = React.useState(vanila_data)
-    const [currentItem, setCurrentItem] = React.useState<IDeveloperVacancy | null>(null)
+    const [search, {data}] = useLazySearchQuery()
+
+    // const [data, setData] = React.useState(vanila_data)
+    const [currentItem, setCurrentItem] = React.useState<ISearch>(null)
     const [end, setEnd] = React.useState<boolean>(false)
+
+    React.useEffect(() => {
+        if (userInfo) {
+            search()
+        }
+    }, [userInfo])
 
     React.useEffect(() => {
         if (!currentItem && data?.length > 0) {

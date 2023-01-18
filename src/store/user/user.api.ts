@@ -1,12 +1,12 @@
 import {createApi} from "@reduxjs/toolkit/query/react"
 import baseQuery from "../../app/api"
-import {ICompany, IDeveloper, IUser, IVacancy, IVacancyDto, Owner, UserRole} from "./user.types";
+import {ICompany, IDeveloper, ISearch, IUser, IVacancy, IVacancyDto, Owner, SearchType, UserRole} from "./user.types";
 
 const userApi = createApi({
     reducerPath: 'api/user',
     baseQuery,
     endpoints: (builder) => ({
-        postUserType: builder.mutation<Owner, {userRole: UserRole}>({
+        postUserType: builder.mutation<Owner, { userRole: UserRole }>({
             query: (role) => ({
                 url: `/api/user/role`,
                 method: 'POST',
@@ -35,7 +35,10 @@ const userApi = createApi({
             query: ({firstName, lastName, description, experience, position, skills}) => ({
                 url: `/api/user/data/developer`,
                 method: 'POST',
-                body: {firstName, lastName, description, experience, position, skills}
+                body: {
+                    firstName, lastName, description, experience, position,
+                    skills: skills.map(i => i.toLowerCase())
+                }
             })
         }),
         updateCompanyInfo: builder.mutation<ICompany, ICompany>({
@@ -49,14 +52,17 @@ const userApi = createApi({
             query: () => `/api/vacancy/my`
         }),
         addVacancy: builder.mutation<IVacancy, IVacancyDto>({
-            query: (data) => ({
+            query: ({tags, ...data}) => ({
                 url: `/api/vacancy`,
                 method: 'POST',
-                body: data
+                body: {
+                    ...data,
+                    tags: tags.map(i => i.toLowerCase())
+                }
             }),
-            async onQueryStarted({  }, { dispatch, queryFulfilled }) {
+            async onQueryStarted({}, {dispatch, queryFulfilled}) {
                 try {
-                    const { data } = await queryFulfilled
+                    const {data} = await queryFulfilled
                     const patchResult = dispatch(
                         userApi.util.updateQueryData('getVacancies', undefined, (draft) => {
                             // Object.assign(draft, updatedPost)
@@ -65,8 +71,21 @@ const userApi = createApi({
                             draft.push(data)
                         })
                     )
-                } catch {}
+                } catch {
+                }
             },
+        }),
+        search: builder.query<ISearch[], void>({
+            query: () => `/api/search?exactMath=false&isCustom=false`,
+            transformResponse: (res: any) => res.map(i => i.skills ? ({
+                type: SearchType.DEVELOPER,
+                data: i,
+                id: i.id
+            }) : ({
+                type: SearchType.VACANCY,
+                data: i,
+                id: i.id
+            }),)
         }),
     })
 });
@@ -79,7 +98,9 @@ export const {
     useUpdateCompanyInfoMutation,
     useGetVacanciesQuery,
     useAddVacancyMutation,
-    useLazyGetVacanciesQuery
+    useLazyGetVacanciesQuery,
+    useSearchQuery,
+    useLazySearchQuery
 } = userApi;
 
 export default userApi

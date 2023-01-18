@@ -101,4 +101,40 @@ export const isCompany = (user:IUser):user is ICompany => {
     return user.owner.role === UserRole.COMPANY
 }
 
+export enum SearchType {
+    VACANCY = 'vacancy',
+    DEVELOPER = 'developer'
+}
+
+interface ISearchContainer {
+    type: SearchType
+    id: number
+}
+
+interface ISearchDeveloper extends ISearchContainer {
+    data: IDeveloper,
+    type: SearchType.DEVELOPER
+}
+
+interface ISearchVacancy extends ISearchContainer {
+    data: IVacancy,
+    type: SearchType.VACANCY
+}
+
+
+export type ISearch = (ISearchVacancy | ISearchDeveloper)
+
+export const isSearchDeveloper = (search_data:ISearch):search_data is ISearchDeveloper => {
+    return search_data.type === SearchType.DEVELOPER
+}
+
+export const isSearchVacancy = (search_data:ISearch):search_data is ISearchVacancy => {
+    return search_data.type === SearchType.VACANCY
+}
+
+// function isSearchDeveloper<T extends IDeveloper>(search_data: T): search_data is IDeveloper {
+//     return true
+// }
+
+
 
